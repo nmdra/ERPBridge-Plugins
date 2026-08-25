@@ -1,0 +1,7 @@
+# Go build output
+/bin/
+*.test
+
+# Local tooling
+.env
+.DS_Store

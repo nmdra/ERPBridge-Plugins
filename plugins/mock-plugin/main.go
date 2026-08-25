@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -9,7 +10,11 @@ import (
 	"time"
 )
 
-const maxJSONBytes = 1 << 20
+const (
+	maxJSONBytes           = 1 << 20
+	mockPluginAPIKeyEnv    = "MOCK_PLUGIN_API_KEY"
+	mockPluginAPIKeyHeader = "X-API-Key"
+)
 
 func main() {
 	port := os.Getenv("PORT")
@@ -42,6 +47,11 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 func processHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		return
+	}
+	configuredKey := os.Getenv(mockPluginAPIKeyEnv)
+	if configuredKey != "" && subtle.ConstantTimeCompare([]byte(r.Header.Get(mockPluginAPIKeyHeader)), []byte(configuredKey)) != 1 {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}
 	body, err := io.ReadAll(io.LimitReader(r.Body, maxJSONBytes+1))

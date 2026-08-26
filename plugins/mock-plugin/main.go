@@ -60,16 +60,40 @@ func processHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var invocation struct {
-		Result any `json:"result"`
+		Result      any `json:"result"`
+		RawResponse *struct {
+			Body struct {
+				Encoding string `json:"encoding"`
+				Value    any    `json:"value"`
+			} `json:"body"`
+		} `json:"rawResponse,omitempty"`
 	}
 	if err := json.Unmarshal(body, &invocation); err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	result, ok := invocation.Result.(map[string]any)
-	if !ok {
-		http.Error(w, "result must be a JSON object", http.StatusUnprocessableEntity)
-		return
+	result := make(map[string]any)
+	if invocation.RawResponse != nil {
+		if invocation.RawResponse.Body.Encoding == "json" {
+			var ok bool
+			result, ok = invocation.RawResponse.Body.Value.(map[string]any)
+			if !ok {
+				http.Error(w, "raw JSON body must be an object", http.StatusUnprocessableEntity)
+				return
+			}
+		} else if invocation.RawResponse.Body.Encoding == "base64" {
+			result["text"] = "mock-plugin extracted text"
+		} else {
+			http.Error(w, "unsupported raw body encoding", http.StatusUnprocessableEntity)
+			return
+		}
+	} else {
+		var ok bool
+		result, ok = invocation.Result.(map[string]any)
+		if !ok {
+			http.Error(w, "result must be a JSON object", http.StatusUnprocessableEntity)
+			return
+		}
 	}
 	transformed := make(map[string]any, len(result)+1)
 	for key, value := range result {

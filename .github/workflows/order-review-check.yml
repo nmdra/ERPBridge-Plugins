@@ -1,0 +1,52 @@
+name: Order review plugin offline checks
+
+on:
+  pull_request:
+    paths:
+      - 'plugins/order-review/**'
+      - 'manifests/erpnext-order-review/**'
+      - 'scripts/prepare-order-review.py'
+      - 'tests/test_order_review_manifests.py'
+      - '.github/workflows/order-review-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'plugins/order-review/**'
+      - 'manifests/erpnext-order-review/**'
+      - 'scripts/prepare-order-review.py'
+      - 'tests/test_order_review_manifests.py'
+      - '.github/workflows/order-review-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      # actions/setup-node v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: plugins/order-review/package-lock.json
+      # actions/setup-python v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: npm ci
+        working-directory: plugins/order-review
+      - run: npm run typecheck
+        working-directory: plugins/order-review
+      - run: npm test
+        working-directory: plugins/order-review
+      - run: npm run build
+        working-directory: plugins/order-review
+      - name: Manifest preparation tests
+        run: >-
+          python3 -m unittest discover -s tests
+          -p 'test_order_review_manifests.py' -v

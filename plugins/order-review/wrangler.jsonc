@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "erpbridge-order-review",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-03-01",
+  "workers_dev": true,
+  "ai": { "binding": "AI", "remote": false },
+  "observability": { "enabled": false }
+}

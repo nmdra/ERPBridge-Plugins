@@ -5,3 +5,15 @@
 # Local tooling
 .env
 .DS_Store
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+artifacts/
+
+# Cloudflare Worker development
+plugins/*/node_modules/
+plugins/*/.wrangler/
+plugins/*/dist/
+plugins/*/.dev.vars*
+!plugins/*/.dev.vars.example

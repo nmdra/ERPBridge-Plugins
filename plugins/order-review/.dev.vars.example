@@ -1,0 +1,3 @@
+# Template only. Do not enable a real AI binding for local tests.
+# Set PLUGIN_API_KEY through your secret manager for a separately approved deployment.
+# PLUGIN_API_KEY must be at least 32 characters. No credential is supplied here.

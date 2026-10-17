@@ -1,0 +1,139 @@
+{
+  "apiVersion": "erpbridge.io/v1",
+  "kind": "MCPTool",
+  "metadata": {
+    "name": "get_invoice_details",
+    "version": "1.0.0",
+    "module": "invoice-demo",
+    "isActive": false
+  },
+  "spec": {
+    "description": {
+      "short": "Extract labeled fields from a text-based invoice PDF.",
+      "whenToUse": [
+        "Read an invoice PDF from an explicitly configured ERP endpoint."
+      ],
+      "whenNotToUse": [
+        "Not for scans, arbitrary layouts, payment approval, or accounting decisions."
+      ],
+      "examples": [
+        "Extract fields from a synthetic invoice PDF."
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+    },
+    "inputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invoice_number",
+        "invoice_date",
+        "currency",
+        "total",
+        "requires_human_review",
+        "warnings"
+      ],
+      "properties": {
+        "invoice_number": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "invoice_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "currency": {
+          "enum": [
+            "LKR",
+            "USD",
+            "EUR",
+            "GBP",
+            "INR",
+            "AUD",
+            "CAD",
+            "JPY",
+            null
+          ]
+        },
+        "total": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 999999999999.99
+        },
+        "requires_human_review": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "warnings": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 4,
+          "items": {
+            "enum": [
+              "invoice_number_missing_or_ambiguous",
+              "invoice_date_missing_or_ambiguous",
+              "currency_missing_or_ambiguous",
+              "total_missing_or_ambiguous"
+            ]
+          }
+        }
+      }
+    },
+    "execution": {
+      "type": "http",
+      "method": "GET",
+      "endpoint": "https://erp.example.invalid/invoices/{name}/pdf",
+      "approvedOrigins": [
+        "https://erp.example.invalid"
+      ],
+      "mapping": {
+        "name": "name"
+      },
+      "parameterLocations": {
+        "name": "path"
+      }
+    },
+    "security": {
+      "authType": "api-key",
+      "authHeader": "Authorization",
+      "credentialRef": "ERP_PRIMARY_KEY",
+      "credentialSource": "env"
+    },
+    "cache": {
+      "enabled": false,
+      "ttlSeconds": 0,
+      "isReadOnly": true,
+      "flushOn": []
+    }
+  }
+}

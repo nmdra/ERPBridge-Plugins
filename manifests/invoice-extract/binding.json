@@ -1,0 +1,13 @@
+{
+  "apiVersion": "erpbridge.io/v1",
+  "kind": "PluginBinding",
+  "metadata": {"name": "invoice-pdf-extract-v1", "isActive": false},
+  "spec": {
+    "pluginRef": {"name": "invoice-pdf-extract", "version": "1.0.0"},
+    "toolRef": {"name": "get_invoice_details", "version": "1.0.0"},
+    "phase": "raw_response",
+    "priority": 10,
+    "failurePolicy": "fail",
+    "config": {"policyVersion": "invoice-text-v1"}
+  }
+}

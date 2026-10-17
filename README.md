@@ -13,6 +13,11 @@ and releasable under `plugins/<plugin-name>/`.
   See the [integration runbook](docs/erpnext-order-review-plugin.md) for manifest
   preparation and separately approved deployment steps.
 
+- [`plugins/invoice-extract`](plugins/invoice-extract/README.md): local Python
+  `raw_response` plugin that extracts labeled invoice fields from text-based PDFs
+  with Poppler. No AI or ERP calls. Image OCR is not supported. Includes
+  inactive example manifests and offline tests. Not deployed.
+
 ERPBridge does not build, install, or start these processes. A deployment
 operator runs a pinned plugin image and configures an ERPBridge `Plugin`
 resource with its network endpoint. Push a tag such as `mock-plugin-v0.1.0` to

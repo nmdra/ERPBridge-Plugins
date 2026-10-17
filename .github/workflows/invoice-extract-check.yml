@@ -1,0 +1,29 @@
+name: Invoice extraction checks
+
+on:
+  push:
+    paths:
+      - 'plugins/invoice-extract/**'
+      - 'manifests/invoice-extract/**'
+      - '.github/workflows/invoice-extract-check.yml'
+  pull_request:
+    paths:
+      - 'plugins/invoice-extract/**'
+      - 'manifests/invoice-extract/**'
+      - '.github/workflows/invoice-extract-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install local PDF parser
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends poppler-utils
+      - name: Test synthetic PDFs and HTTP protocol
+        working-directory: plugins/invoice-extract
+        run: python3 -m unittest -v

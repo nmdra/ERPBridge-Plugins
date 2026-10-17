@@ -28,6 +28,46 @@ func TestProcessHandlerAddsMarker(t *testing.T) {
 	}
 }
 
+func TestProcessHandlerTransformsRawJSONBody(t *testing.T) {
+	t.Setenv(mockPluginAPIKeyEnv, "")
+	payload := `{"protocolVersion":"v1","invocationId":"id","tool":{"name":"fixture","version":"1.0.0"},"rawResponse":{"status":200,"contentType":"application/json","body":{"encoding":"json","value":{"state":"source"}}}}`
+	request := httptest.NewRequest(http.MethodPost, "/v1/process", strings.NewReader(payload))
+	recorder := httptest.NewRecorder()
+	processHandler(recorder, request)
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", recorder.Code, recorder.Body.String())
+	}
+
+	var response map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &response); err != nil {
+		t.Fatal(err)
+	}
+	result, ok := response["result"].(map[string]any)
+	if !ok || result["processedBy"] != "mock-plugin" || result["state"] != "source" {
+		t.Fatalf("unexpected response: %#v", response)
+	}
+}
+
+func TestProcessHandlerTransformsRawBinaryBodyToText(t *testing.T) {
+	t.Setenv(mockPluginAPIKeyEnv, "")
+	payload := `{"protocolVersion":"v1","invocationId":"id","tool":{"name":"fixture","version":"1.0.0"},"rawResponse":{"status":200,"contentType":"image/png","body":{"encoding":"base64","value":"iVBORw=="}}}`
+	request := httptest.NewRequest(http.MethodPost, "/v1/process", strings.NewReader(payload))
+	recorder := httptest.NewRecorder()
+	processHandler(recorder, request)
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", recorder.Code, recorder.Body.String())
+	}
+
+	var response map[string]any
+	if err := json.Unmarshal(recorder.Body.Bytes(), &response); err != nil {
+		t.Fatal(err)
+	}
+	result, ok := response["result"].(map[string]any)
+	if !ok || result["processedBy"] != "mock-plugin" || result["text"] != "mock-plugin extracted text" {
+		t.Fatalf("unexpected response: %#v", response)
+	}
+}
+
 func TestProcessHandlerRequiresAPIKey(t *testing.T) {
 	const configuredKey = "expected-plugin-key"
 	const payload = `{"protocolVersion":"v1","invocationId":"id","tool":{"name":"fixture","version":"1.0.0"},"result":{"state":"source"}}`

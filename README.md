@@ -5,8 +5,18 @@ and releasable under `plugins/<plugin-name>/`.
 
 ## Plugins
 
-- `plugins/mock-plugin` — deterministic response fixture used by the ERPBridge
+- `plugins/mock-plugin`: deterministic response fixture used by the ERPBridge
   black-box integration test.
+- [`plugins/order-review`](plugins/order-review/README.md): Cloudflare Worker
+  that adds an advisory Sales Order assessment with `@cf/cloudflare/clef-flash`.
+  Local tests mock AI. No ERPNext requests or credentials are used by the Worker.
+  See the [integration runbook](docs/erpnext-order-review-plugin.md) for manifest
+  preparation and separately approved deployment steps.
+
+- [`plugins/invoice-extract`](plugins/invoice-extract/README.md): local Python
+  `raw_response` plugin that extracts labeled invoice fields from text-based PDFs
+  with Poppler. No AI or ERP calls. Image OCR is not supported. Includes
+  inactive example manifests and offline tests. Not deployed.
 
 ERPBridge does not build, install, or start these processes. A deployment
 operator runs a pinned plugin image and configures an ERPBridge `Plugin`

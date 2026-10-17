@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model",
+    "policy_version",
+    "evaluated_at",
+    "status",
+    "review_queue",
+    "review_priority",
+    "requires_human_review",
+    "advisory_only"
+  ],
+  "properties": {
+    "model": {
+      "const": "@cf/cloudflare/clef-flash"
+    },
+    "policy_version": {
+      "const": "order-review-v1"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "assessed",
+        "insufficient_data",
+        "uncertain"
+      ]
+    },
+    "review_queue": {
+      "enum": [
+        "routine",
+        "delivery_review",
+        "billing_review",
+        "insufficient_data"
+      ]
+    },
+    "review_priority": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "insufficient_data"
+      ]
+    },
+    "requires_human_review": {
+      "const": true
+    },
+    "advisory_only": {
+      "const": true
+    }
+  }
+}

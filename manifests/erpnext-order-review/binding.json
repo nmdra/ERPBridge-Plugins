@@ -1,0 +1,24 @@
+{
+  "apiVersion": "erpbridge.io/v1",
+  "kind": "PluginBinding",
+  "metadata": {
+    "name": "sales-order-ai-review-v1",
+    "isActive": false
+  },
+  "spec": {
+    "pluginRef": {
+      "name": "sales-order-ai-review",
+      "version": "1.0.0"
+    },
+    "toolRef": {
+      "name": "get_sales_order_with_ai_review",
+      "version": "1.0.0"
+    },
+    "phase": "after_response",
+    "priority": 10,
+    "failurePolicy": "fail",
+    "config": {
+      "policyVersion": "order-review-v1"
+    }
+  }
+}

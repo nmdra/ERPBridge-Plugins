@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["invoice_number", "invoice_date", "currency", "total", "requires_human_review", "warnings"],
+  "properties": {
+    "invoice_number": {"type": ["string", "null"], "maxLength": 64},
+    "invoice_date": {"type": ["string", "null"], "format": "date"},
+    "currency": {"enum": ["LKR", "USD", "EUR", "GBP", "INR", "AUD", "CAD", "JPY", null]},
+    "total": {"type": ["number", "null"], "minimum": 0, "maximum": 999999999999.99},
+    "requires_human_review": {"type": "boolean", "enum": [true]},
+    "warnings": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 4,
+      "items": {"enum": ["invoice_number_missing_or_ambiguous", "invoice_date_missing_or_ambiguous", "currency_missing_or_ambiguous", "total_missing_or_ambiguous"]}
+    }
+  }
+}

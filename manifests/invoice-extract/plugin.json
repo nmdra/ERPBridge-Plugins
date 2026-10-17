@@ -1,0 +1,10 @@
+{
+  "apiVersion": "erpbridge.io/v1",
+  "kind": "Plugin",
+  "metadata": {"name": "invoice-pdf-extract", "version": "1.0.0", "type": "api", "isActive": false},
+  "spec": {
+    "endpoint": "https://invoice-extract.example.invalid",
+    "timeoutMilliseconds": 15000,
+    "auth": {"type": "api-key", "header": "X-API-Key", "credentialRef": "PLUGIN_API_KEY"}
+  }
+}
